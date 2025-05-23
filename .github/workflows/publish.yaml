@@ -5,6 +5,7 @@ concurrency:
 on:  # yamllint disable-line rule:truthy
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -20,10 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt update && sudo apt install -y binutils rustc cargo pkg-config libssl-dev gettext
-      - name: build debian package
-        run: |
-          cd efs-utils
-          ./build-deb.sh
+      - run: ./build-deb.sh
       - uses: softprops/action-gh-release@v2
         with:
           files: ./build/amazon-efs-utils*deb

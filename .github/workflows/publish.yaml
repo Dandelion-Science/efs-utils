@@ -1,0 +1,30 @@
+name: publish
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+on:  # yamllint disable-line rule:truthy
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    permissions:
+      id-token: write
+      contents: write
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-latest]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt update && sudo apt install -y binutils rustc cargo pkg-config libssl-dev gettext
+      - name: build debian package
+        run: |
+          cd efs-utils
+          ./build-deb.sh
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: ./build/amazon-efs-utils*deb
+          tag_name: ${{ github.event.release.tag_name }}

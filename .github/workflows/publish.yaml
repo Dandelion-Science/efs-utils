@@ -5,7 +5,6 @@ concurrency:
 on:  # yamllint disable-line rule:truthy
   release:
     types: [published]
-  workflow_dispatch:
 
 jobs:
   publish:
